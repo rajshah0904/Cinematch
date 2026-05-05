@@ -155,3 +155,69 @@ class RecommendationSystem:
             candidates = sorted(candidates, key=lambda m: m.average_rating(), reverse=True)
 
         return candidates[:n]
+
+     def similarity_score(self, movie_a, movie_b):
+        """Return a similarity score between 0.0 and 1.0 comparing two movies."""
+        # need ratings on both sides to do the comparison
+        if len(movie_a.ratings) == 0 or len(movie_b.ratings) == 0:
+            raise RuntimeError("Both movies need at least one rating to compare")
+
+        score = 0.0
+
+        # same genre gives half the score
+        if movie_a.genre == movie_b.genre:
+            score += 0.5
+
+        # closer average ratings gives the other half
+        avg_a = movie_a.average_rating()
+        avg_b = movie_b.average_rating()
+        rating_sim = 0.5 * (1 - abs(avg_a - avg_b) / 4.0)
+        score += rating_sim
+
+        return round(score, 4)
+
+    def plot_genre_ratings(self):
+        """Make a bar chart of average rating by genre, save it, and display it."""
+        # build a small dataframe so we can use pandas groupby + mean
+        rows = []
+        for movie in self.movies.values():
+            if len(movie.ratings) > 0:
+                rows.append({'genre': movie.genre, 'avg_rating': movie.average_rating()})
+
+        genre_df = pd.DataFrame(rows)
+
+        # pandas groupby + mean to get one average per genre
+        genre_means = genre_df.groupby('genre')['avg_rating'].mean().sort_values()
+
+        genres = genre_means.index.tolist()
+        avg_ratings = genre_means.values.tolist()
+
+        plt.figure(figsize=(12, 6))
+        plt.bar(genres, avg_ratings)
+        plt.title("Average Rating by Genre")
+        plt.xlabel("Genre")
+        plt.ylabel("Average Rating")
+        plt.ylim(0, 5)
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        plt.savefig("genre_ratings.png")
+        plt.show()
+
+    def plot_rating_distribution(self):
+        """Make a histogram of all ratings and save it."""
+        plt.figure(figsize=(8, 5))
+        plt.hist(self.ratings_df['rating'], bins=10)
+        plt.title("Distribution of All Ratings")
+        plt.xlabel("Rating")
+        plt.ylabel("Count")
+        plt.tight_layout()
+        plt.savefig("rating_distribution.png")
+        plt.show()
+
+    def __str__(self):
+        """Return a summary showing how many movies and users are loaded."""
+        return f"RecommendationSystem | Movies: {len(self.movies)} | Users: {len(self.users)}"
+
+    def __len__(self):
+        """Return the number of movies in the system."""
+        return len(self.movies)
