@@ -156,7 +156,7 @@ class RecommendationSystem:
 
         return candidates[:n]
 
-     def similarity_score(self, movie_a, movie_b):
+    def similarity_score(self, movie_a, movie_b):
         """Return a similarity score between 0.0 and 1.0 comparing two movies."""
         # need ratings on both sides to do the comparison
         if len(movie_a.ratings) == 0 or len(movie_b.ratings) == 0:
