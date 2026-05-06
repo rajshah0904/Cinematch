@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from movie import Movie
-from user import User
+from cinematch.movie import Movie
+from cinematch.user import User
 
 
 class RecommendationSystem:

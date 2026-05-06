@@ -1,7 +1,6 @@
 import random
 import math
 
-
 def get_all_genres(movies_dict):
     """Return a set of every unique genre found across all movies."""
     genres = set()

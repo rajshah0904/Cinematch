@@ -1,0 +1,10 @@
+# Runtime: used by recommendation_system.py (and thus the notebook).
+pandas>=2.0
+matplotlib>=3.7
+# numpy, python-dateutil, pytz, etc. are pulled in automatically by pandas/matplotlib.
+
+# Notebook: select this venv’s Python as Jupyter kernel for cinematch/main.ipynb
+ipykernel>=6.29
+
+# Tests
+pytest>=7.4

@@ -1,12 +1,14 @@
+"""Pytest tests for CineMatch core logic (ratings, users, recommendations)."""
+
 import pytest
 import sys
 import os
 
-# add the parent directory so we can import movie and user
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from movie import Movie
-from user import User
+from cinematch.movie import Movie
+from cinematch.user import User
+from cinematch.recommendation_system import RecommendationSystem
 
 
 def test_movie_average_rating():
@@ -56,3 +58,24 @@ def test_user_watch_history():
     user.add_to_history(1)
     user.add_to_history(1)
     assert len(user.watch_history) == 1
+
+
+def test_recommend_for_user_unknown_user_raises_keyerror():
+    """recommend_for_user should raise KeyError when the user_id is not registered."""
+    system = RecommendationSystem()
+    with pytest.raises(KeyError, match="User 404 not found"):
+        system.recommend_for_user(404)
+
+
+def test_get_top_movies_orders_by_average_rating_descending():
+    """get_top_movies should return the highest-rated movies first (among rated movies)."""
+    system = RecommendationSystem()
+    low = Movie(1, "Low", "Action", 2020, "X")
+    low.add_rating(2.0)
+    high = Movie(2, "High", "Drama", 2020, "Y")
+    high.add_rating(5.0)
+    mid = Movie(3, "Mid", "Comedy", 2020, "Z")
+    mid.add_rating(4.0)
+    system.movies = {1: low, 2: high, 3: mid}
+    top = system.get_top_movies(n=2)
+    assert [m.movie_id for m in top] == [2, 3]
